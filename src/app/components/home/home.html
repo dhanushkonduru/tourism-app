@@ -1,5 +1,17 @@
-<section class="hero">
-  <h1>Explore the <span>World</span></h1>
-  <p>Find destinations, plan trips, and book unforgettable experiences</p>
-  <button routerLink="/destinations">Explore Destinations</button>
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-content">
+    <p class="hero-kicker">Plan smarter, travel better</p>
+    <h1 id="hero-title">Explore the <span>World</span></h1>
+    <p class="hero-description">
+      Discover curated destinations, build your itinerary, and book seamless
+      experiences with a single, trusted platform.
+    </p>
+    <button class="hero-cta" routerLink="/destinations">
+      Explore Destinations
+    </button>
+  </div>
+
+  <div class="hero-media" aria-hidden="true">
+    <img src="/assets/images/eiffel.jpg" alt="Eiffel Tower" />
+  </div>
 </section>
