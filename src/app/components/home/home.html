@@ -1,17 +1,159 @@
-<section class="hero" aria-labelledby="hero-title">
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <p class="hero-kicker">Plan smarter, travel better</p>
-    <h1 id="hero-title">Explore the <span>World</span></h1>
-    <p class="hero-description">
-      Discover curated destinations, build your itinerary, and book seamless
-      experiences with a single, trusted platform.
+    <h1 class="hero-title">Explore the World <span>Seamlessly</span></h1>
+    <p class="hero-subtitle">
+      Discover personalized destinations, book premium packages, and create
+      unforgettable memories with trusted travel experiences.
     </p>
-    <button class="hero-cta" routerLink="/destinations">
-      Explore Destinations
-    </button>
+    <div class="hero-cta-group">
+      <button class="btn btn-primary" routerLink="/destinations">
+        Explore Destinations
+      </button>
+      <button class="btn btn-secondary" routerLink="/booking">
+        Plan My Trip
+      </button>
+    </div>
   </div>
+</section>
 
-  <div class="hero-media" aria-hidden="true">
-    <img src="/assets/images/eiffel.jpg" alt="Eiffel Tower" />
+<!-- Featured Destinations -->
+<section class="section featured-destinations">
+  <div class="container">
+    <div class="section-header">
+      <h2>Featured Destinations</h2>
+      <p>Handpicked locations that inspire wanderlust</p>
+    </div>
+
+    <div class="destinations-grid">
+      @for (destination of featuredDestinations; track destination.id) {
+        <div class="destination-card">
+          <div class="card-image">
+            <img [src]="destination.image" [alt]="destination.name" loading="lazy" />
+            <div class="card-badge">{{ destination.badge }}</div>
+          </div>
+          <div class="card-content">
+            <h3>{{ destination.name }}</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-value">{{ destination.rating }}</span>
+            </div>
+            <p>{{ destination.description }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section why-choose-us">
+  <div class="container">
+    <div class="section-header">
+      <h2>Why Choose Us</h2>
+      <p>Your trusted partner for seamless travel experiences</p>
+    </div>
+
+    <div class="features-grid">
+      @for (feature of features; track feature.id) {
+        <div class="feature-card">
+          <div class="feature-icon">{{ feature.icon }}</div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Popular Packages -->
+<section class="section popular-packages">
+  <div class="container">
+    <div class="section-header">
+      <h2>Popular Packages</h2>
+      <p>Curated experiences for every traveler</p>
+    </div>
+
+    <div class="packages-grid">
+      @for (pkg of popularPackages; track pkg.id) {
+        <div class="package-card">
+          <div class="package-image">
+            <img [src]="pkg.image" [alt]="pkg.title" loading="lazy" />
+            @if (pkg.highlight) {
+              <div class="package-highlight">{{ pkg.highlight }}</div>
+            }
+          </div>
+          <div class="package-content">
+            <h3>{{ pkg.title }}</h3>
+            <div class="package-meta">
+              <span class="duration">{{ pkg.duration }}</span>
+              <span class="price">{{ pkg.price }}</span>
+            </div>
+            <p>{{ pkg.description }}</p>
+            <button class="btn btn-outline">View Details</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Travel Inspiration Gallery -->
+<section class="section travel-gallery">
+  <div class="container">
+    <div class="section-header">
+      <h2>Travel Inspiration</h2>
+      <p>Get inspired by breathtaking destinations around the globe</p>
+    </div>
+
+    <div class="gallery-grid">
+      @for (photo of galleryPhotos; track photo.id) {
+        <div class="gallery-item" [class]="'gallery-item-' + photo.size">
+          <img [src]="photo.url" [alt]="photo.caption" loading="lazy" />
+          <div class="gallery-overlay">
+            <span>{{ photo.caption }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2>What Travelers Say</h2>
+      <p>Real experiences from our valued customers</p>
+    </div>
+
+    <div class="testimonials-grid">
+      @for (testimonial of testimonials; track testimonial.id) {
+        <div class="testimonial-card">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">{{ testimonial.text }}</p>
+          <div class="testimonial-author">
+            <img [src]="testimonial.avatar" [alt]="testimonial.name" />
+            <div>
+              <h4>{{ testimonial.name }}</h4>
+              <span>{{ testimonial.location }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="cta-banner">
+  <div class="cta-overlay"></div>
+  <div class="cta-content">
+    <h2>Start Your Next Journey Today</h2>
+    <p>
+      Join thousands of travelers who trust us for unforgettable experiences
+    </p>
+    <button class="btn btn-primary" routerLink="/booking">Book Now</button>
   </div>
 </section>
