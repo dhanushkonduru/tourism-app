@@ -4,11 +4,15 @@ import { HomeComponent } from './components/home/home';
 import { DestinationsComponent } from './components/destinations/destinations';
 import { BookingComponent } from './components/booking/booking';
 import { ContactComponent } from './components/contact/contact';
+import { LoginComponent } from './components/login/login';
+import { SignupComponent } from './components/signup/signup';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'destinations', component: DestinationsComponent },
   { path: 'booking', component: BookingComponent },
-  { path: 'contact', component: ContactComponent }
+  { path: 'contact', component: ContactComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent }
 ];

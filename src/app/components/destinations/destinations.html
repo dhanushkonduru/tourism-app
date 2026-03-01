@@ -1,2 +1,178 @@
-<h2>Destinations</h2>
-<p>Browse popular travel destinations.</p>
+<!-- Hero Banner with rotating background -->
+<section class="hero-banner">
+	<div class="hero-slides">
+		<div
+			*ngFor="let img of heroImages; let i = index"
+			class="hero-slide"
+			[class.active]="i === currentHeroIndex"
+			[style.backgroundImage]="'url(' + img + ')'">
+		</div>
+	</div>
+	<div class="hero-overlay"></div>
+	<div class="hero-content">
+		<h1>International Destinations</h1>
+		<p>Discover and compare premium travel experiences across the globe</p>
+	</div>
+</section>
+
+<section class="destinations-page">
+	<div class="container">
+
+		<!-- Filter Bar -->
+		<div class="glass-filter-bar">
+			<div class="control-group">
+				<label for="sortBy">Sort By</label>
+				<select id="sortBy" [(ngModel)]="sortBy" (ngModelChange)="onSortChange($event)">
+					<option value="popularity">Popularity</option>
+					<option value="price-asc">Price: Low to High</option>
+					<option value="price-desc">Price: High to Low</option>
+					<option value="rating-desc">Top Rating</option>
+				</select>
+			</div>
+
+			<div class="control-group full-width">
+				<label>Travel Type</label>
+				<div class="chip-row">
+					<button
+						*ngFor="let type of travelTypes"
+						type="button"
+						[ngClass]="{ 'active-chip': travelType === type }"
+						(click)="onTravelTypeChange(type)">
+						{{ getTravelTypeLabel(type) }}
+					</button>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label for="budget">Budget Up To: ${{ maxBudget }}</label>
+				<input
+					id="budget"
+					type="range"
+					min="500"
+					[max]="maxBudgetLimit"
+					step="100"
+					[(ngModel)]="maxBudget"
+					(ngModelChange)="onBudgetChange($event)" />
+			</div>
+
+			<div class="control-group">
+				<label for="region">Region</label>
+				<select id="region" [(ngModel)]="region" (ngModelChange)="onRegionChange($event)">
+					<option *ngFor="let item of regions" [value]="item">
+						{{ item === 'all' ? 'All Regions' : (item | titlecase) }}
+					</option>
+				</select>
+			</div>
+
+			<div class="control-group full-width">
+				<label for="search">Search Destination</label>
+				<input
+					id="search"
+					type="search"
+					[(ngModel)]="searchTerm"
+					(ngModelChange)="onSearchChange($event)"
+					placeholder="Search by name or country" />
+			</div>
+
+			<div class="control-group reset-wrap">
+				<button type="button" class="btn-reset" (click)="resetFilters()">Reset Filters</button>
+			</div>
+		</div>
+
+		<!-- Results Summary -->
+		<div class="results-row">
+			<p>
+				Showing {{ currentResultsCount }} of {{ filteredCount }} destinations
+				<span *ngIf="filteredCount !== totalCount">(from {{ totalCount }} total)</span>
+			</p>
+		</div>
+
+		<!-- Card Grid -->
+		<div class="destinations-grid" [ngClass]="{ 'filtering': isFiltering }" *ngIf="filteredCount > 0; else emptyState">
+			<article class="destination-card" *ngFor="let destination of pagedDestinations; trackBy: trackByDestination">
+				<!-- Image Section - matches home page style -->
+				<div class="card-image-wrapper">
+					<img
+						[src]="destination.imageUrl"
+						[alt]="destination.name"
+						loading="lazy"
+						decoding="async"
+						(error)="onImageError($event)" />
+					<div class="image-overlay"></div>
+					<div class="price-badge">
+						<span class="from">From</span>
+						<span class="amount">${{ destination.priceFrom }}</span>
+					</div>
+				</div>
+
+				<!-- Card Content - matches home page style -->
+				<div class="card-body">
+					<div class="destination-header">
+						<div>
+							<h3>{{ destination.name }}</h3>
+							<p class="country">{{ destination.flag }} {{ destination.country }}</p>
+						</div>
+						<div class="rating-badge">
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+								<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+							</svg>
+							<span>{{ destination.rating }}</span>
+						</div>
+					</div>
+
+					<div class="tags">
+						<span class="tag-chip" *ngFor="let tag of destination.tags">{{ tag }}</span>
+					</div>
+
+					<p class="description">{{ destination.description }}</p>
+
+					<div class="card-footer">
+						<span class="price-range">${{ destination.priceFrom }} – ${{ destination.priceTo }}</span>
+						<button type="button" class="btn-packages" routerLink="/booking">
+							<span>View Packages</span>
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+								<line x1="5" y1="12" x2="19" y2="12"></line>
+								<polyline points="12 5 19 12 12 19"></polyline>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</article>
+		</div>
+
+		<!-- Pagination -->
+		<div class="pagination-row" *ngIf="filteredCount > 0 && totalPages > 1">
+			<button type="button" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+					<polyline points="15 18 9 12 15 6"></polyline>
+				</svg>
+				Prev
+			</button>
+
+			<button
+				type="button"
+				*ngFor="let page of visiblePageNumbers"
+				(click)="onPageChange(page)"
+				[ngClass]="{ 'active-page': page === currentPage }">
+				{{ page }}
+			</button>
+
+			<button type="button" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages">
+				Next
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+					<polyline points="9 18 15 12 9 6"></polyline>
+				</svg>
+			</button>
+		</div>
+
+		<!-- Empty State -->
+		<ng-template #emptyState>
+			<div class="empty-state">
+				<div class="empty-orb"></div>
+				<h3>No destinations match your criteria</h3>
+				<p>Try adjusting filters to explore more destinations.</p>
+				<button type="button" class="btn-reset" (click)="resetFilters()">Reset Filters</button>
+			</div>
+		</ng-template>
+	</div>
+</section>
