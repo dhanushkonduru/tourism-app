@@ -1,0 +1,191 @@
+<section class="profile-page">
+  <div class="container" *ngIf="currentUser as user">
+    <section class="hero-cover" [style.background-image]="'url(' + coverImageUrl + ')'">
+      <button type="button" class="edit-pill" (click)="setTab('settings')" aria-label="Edit profile">
+        Edit Profile
+      </button>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <img class="avatar" [src]="avatarUrl" [alt]="user.displayName + ' avatar'" loading="lazy" />
+        <div class="identity">
+          <h1>{{ userDisplayName }}</h1>
+          <p>{{ location }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="user-info-panel">
+      <article class="info-item">
+        <span>Name</span>
+        <strong>{{ userDisplayName }}</strong>
+      </article>
+      <article class="info-item">
+        <span>Email</span>
+        <strong>{{ userEmail }}</strong>
+      </article>
+      <article class="info-item">
+        <span>Member Since</span>
+        <strong>{{ memberSince }}</strong>
+      </article>
+      <article class="info-item">
+        <span>Trips Booked</span>
+        <strong>{{ totalBookings }}</strong>
+      </article>
+      <article class="info-item badge-item">
+        <span>Traveler Level</span>
+        <strong>{{ travelerLevel }}</strong>
+      </article>
+      <article class="info-item">
+        <span>Total Destinations Visited</span>
+        <strong>{{ destinationsVisited }}</strong>
+      </article>
+    </section>
+
+    <nav class="dashboard-tabs" aria-label="Profile dashboard tabs">
+      <button type="button" [ngClass]="{ active: isActiveTab('overview') }" (click)="setTab('overview')">Overview</button>
+      <button type="button" [ngClass]="{ active: isActiveTab('bookings') }" (click)="setTab('bookings')">My Bookings</button>
+      <button type="button" [ngClass]="{ active: isActiveTab('favorites') }" (click)="setTab('favorites')">Favorites</button>
+      <button type="button" [ngClass]="{ active: isActiveTab('settings') }" (click)="setTab('settings')">Account Settings</button>
+    </nav>
+
+    <section class="tab-panel" *ngIf="isActiveTab('overview')">
+      <div class="stat-grid">
+        <article class="stat-card">
+          <p>Trips Completed</p>
+          <h3>{{ tripsCompleted }}</h3>
+        </article>
+        <article class="stat-card">
+          <p>Upcoming Trips</p>
+          <h3>{{ upcomingTrips }}</h3>
+        </article>
+        <article class="stat-card">
+          <p>Total Money Spent</p>
+          <h3>${{ totalMoneySpent }}</h3>
+        </article>
+        <article class="stat-card">
+          <p>Favorite Destination</p>
+          <h3>{{ favoriteDestinationName }}</h3>
+        </article>
+      </div>
+    </section>
+
+    <section class="tab-panel" *ngIf="isActiveTab('bookings')">
+      <header class="tab-header">
+        <h2>My Bookings</h2>
+        <div class="profile-actions">
+          <button type="button" class="btn-secondary" (click)="exportBookings()">Export JSON</button>
+          <button type="button" class="btn-danger" [disabled]="deleting || bookings.length === 0" (click)="deleteAllBookings()">
+            Delete All
+          </button>
+        </div>
+      </header>
+
+      <section class="state-card" *ngIf="loading">
+        <p>Loading your bookings...</p>
+      </section>
+
+      <section class="state-card" *ngIf="!loading && bookings.length === 0">
+        <h3>No linked bookings yet</h3>
+        <p>Bookings saved while logged in will appear here.</p>
+        <a class="btn-link" routerLink="/destinations">Explore Destinations</a>
+      </section>
+
+      <section class="booking-grid" *ngIf="!loading && bookings.length > 0">
+        <article class="booking-card" *ngFor="let booking of pagedBookings">
+          <img [src]="booking.destinationImage" [alt]="booking.destinationName" loading="lazy" />
+
+          <div class="booking-body">
+            <p class="booking-id">Booking ID: {{ bookingReference(booking) }}</p>
+            <h3>{{ booking.destinationName }}</h3>
+            <p class="meta">{{ booking.country }} · {{ booking.bookingDate }}</p>
+
+            <div class="booking-stats">
+              <span>Travelers: <strong>{{ booking.travelers }}</strong></span>
+              <span>Days: <strong>{{ booking.days }}</strong></span>
+              <span>Total Cost: <strong>${{ booking.totalCost }}</strong></span>
+            </div>
+
+            <div class="card-actions">
+              <a class="btn-view" [routerLink]="['/booking-confirmation', bookingReference(booking)]">View Booking</a>
+              <button type="button" class="btn-delete" [disabled]="deleting" (click)="deleteBooking(bookingReference(booking))">Delete Booking</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <footer class="pager" *ngIf="!loading && bookings.length > pageSize">
+        <button type="button" (click)="prevPage()" [disabled]="page === 1">Prev</button>
+        <span>Page {{ page }} of {{ totalPages }}</span>
+        <button type="button" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+      </footer>
+    </section>
+
+    <section class="tab-panel" *ngIf="isActiveTab('favorites')">
+      <header class="tab-header">
+        <h2>Saved Favorites</h2>
+      </header>
+
+      <section class="state-card" *ngIf="favoriteDestinations.length === 0">
+        <h3>No favorites yet</h3>
+        <p>No favorites yet. Click the star icon on destinations to build your travel wishlist.</p>
+      </section>
+
+      <section class="favorite-grid" *ngIf="favoriteDestinations.length > 0">
+        <article class="favorite-card" *ngFor="let favorite of favoriteDestinations">
+          <img [src]="favorite.imageUrl" [alt]="favorite.name" loading="lazy" />
+          <div class="favorite-body">
+            <h3>{{ favorite.name }}</h3>
+            <p>{{ favorite.country }}</p>
+            <p>Rating: {{ favorite.rating }} · Price: ${{ favorite.price }}</p>
+            <button type="button" class="btn-remove" (click)="removeFavorite(favorite.destinationId)">Remove from Favorites</button>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <section class="tab-panel" *ngIf="isActiveTab('settings')">
+      <header class="tab-header">
+        <h2>Account Settings</h2>
+      </header>
+
+      <form class="settings-form" [formGroup]="settingsForm" (ngSubmit)="saveAccountSettings()" novalidate>
+        <label>
+          Full Name
+          <input type="text" formControlName="fullName" />
+          <small *ngIf="hasSettingsError('fullName')">{{ settingsError('fullName') }}</small>
+        </label>
+
+        <label>
+          Email
+          <input type="email" formControlName="email" />
+          <small *ngIf="hasSettingsError('email')">{{ settingsError('email') }}</small>
+        </label>
+
+        <label>
+          Location
+          <input type="text" formControlName="location" placeholder="Chennai, India" />
+        </label>
+
+        <label>
+          Traveler Level
+          <input type="text" formControlName="travelerLevel" placeholder="Rising Voyager" />
+        </label>
+
+        <label>
+          Password Update (Optional)
+          <input type="password" formControlName="newPassword" placeholder="At least 8 characters" />
+          <small *ngIf="hasSettingsError('newPassword')">{{ settingsError('newPassword') }}</small>
+        </label>
+
+        <label>
+          Profile Picture Upload
+          <input type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+        </label>
+
+        <div class="settings-actions">
+          <button type="submit" class="btn-primary" [disabled]="isSaveDisabled">Save Changes</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

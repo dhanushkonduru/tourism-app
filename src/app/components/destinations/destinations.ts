@@ -5,7 +5,10 @@ import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Destination, DestinationFilterState, SortOption, TravelType } from '../../models/destination.model';
+import { AuthService } from '../../services/auth.service';
 import { DestinationService } from '../../services/destination.service';
+import { FavoritesService } from '../../services/favorites.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-destinations',
@@ -52,9 +55,13 @@ export class DestinationsComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
   private animationTimer: ReturnType<typeof setTimeout> | null = null;
   private heroTimer: ReturnType<typeof setInterval> | null = null;
+  private favoriteIds = new Set<string>();
 
   constructor(
     private readonly destinationService: DestinationService,
+    private readonly authService: AuthService,
+    private readonly favoritesService: FavoritesService,
+    private readonly toastService: ToastService,
     private readonly cdr: ChangeDetectorRef
   ) {
     this.travelTypes = this.destinationService.travelTypes;
@@ -63,6 +70,8 @@ export class DestinationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.syncFavorites();
+
     this.subscriptions.add(
       this.destinationService.filteredDestinations$.subscribe((destinations) => {
         this.destinations = destinations;
@@ -166,6 +175,31 @@ export class DestinationsComponent implements OnInit, OnDestroy {
     image.src = this.fallbackImage;
   }
 
+  isFavorite(destinationId: string): boolean {
+    return this.favoriteIds.has(destinationId);
+  }
+
+  toggleFavorite(destination: Destination): void {
+    const currentUser = this.authService.getCurrentUserSnapshot();
+
+    if (!currentUser) {
+      this.toastService.info('Login to save destinations to your wishlist.');
+      return;
+    }
+
+    if (this.favoriteIds.has(destination.destinationId)) {
+      this.favoritesService.removeFavorite(destination.destinationId);
+      this.favoriteIds.delete(destination.destinationId);
+      this.toastService.info('Removed from favorites.');
+    } else {
+      this.favoritesService.addFavorite(destination);
+      this.favoriteIds.add(destination.destinationId);
+      this.toastService.success('Added to favorites.');
+    }
+
+    this.cdr.markForCheck();
+  }
+
   get visiblePageNumbers(): number[] {
     const maxVisibleButtons = 5;
     const half = Math.floor(maxVisibleButtons / 2);
@@ -213,5 +247,17 @@ export class DestinationsComponent implements OnInit, OnDestroy {
       this.isFiltering = false;
       this.cdr.markForCheck();
     }, 220);
+  }
+
+  private syncFavorites(): void {
+    const currentUser = this.authService.getCurrentUserSnapshot();
+
+    if (!currentUser) {
+      this.favoriteIds = new Set<string>();
+      return;
+    }
+
+    const favorites = this.favoritesService.getFavorites(currentUser.uid);
+    this.favoriteIds = new Set(favorites.map((favorite) => favorite.id));
   }
 }

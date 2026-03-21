@@ -181,8 +181,16 @@ function toHundreds(value: number): number {
   return Math.round(value / 100) * 100;
 }
 
+function toSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function buildDestination(seed: PlaceSeed, index: number): Destination {
   const id = index + 1;
+  const destinationId = `${toSlug(seed.city)}-${toSlug(NAME_SUFFIXES[(id * 5 + seed.city.length) % NAME_SUFFIXES.length])}`;
   const priceBand = REGION_PRICE_BANDS[seed.region];
 
   const fromRaw = seededNumber(id + 3, priceBand.min, Math.max(priceBand.min + 300, priceBand.max - 900));
@@ -204,6 +212,7 @@ function buildDestination(seed: PlaceSeed, index: number): Destination {
 
   return {
     id,
+    destinationId,
     city: seed.city,
     name: `${seed.city} ${suffix}`,
     country: seed.country,

@@ -1,2 +1,102 @@
-<h2>Book a Tour</h2>
-<p>Select a destination and plan your trip.</p>
+<section class="booking-page">
+	<div class="container">
+		<div class="page-header">
+			<h1>Destination Booking</h1>
+			<p>Choose your travel details and confirm your luxury experience.</p>
+		</div>
+
+		<div class="not-found" *ngIf="destinationNotFound">
+			<h2>Destination not found</h2>
+			<p>Please return to destinations and choose a valid package.</p>
+			<a class="btn-link" routerLink="/destinations">Back to Destinations</a>
+		</div>
+
+		<div *ngIf="destination" class="booking-layout">
+			<article class="destination-summary">
+				<div class="summary-image-wrap">
+					<img [src]="destination.imageUrl" [alt]="destination.city + ' scenic overview'" loading="lazy" />
+					<div class="summary-overlay">
+						<div class="summary-content">
+							<p class="label">Selected Destination</p>
+							<h2>{{ destination.city }}</h2>
+							<p class="country">{{ destination.flag }} {{ destination.country }}</p>
+						</div>
+						<div class="summary-price">
+							<span>Base Price / Day</span>
+							<strong>${{ destination.priceFrom }}</strong>
+						</div>
+					</div>
+				</div>
+			</article>
+
+			<div class="booking-content-grid">
+				<section class="booking-form-card">
+					<h3>1. Traveler Information</h3>
+					<p>Fill in your details to secure this destination package.</p>
+					<p class="guest-promo" *ngIf="!isLoggedIn">
+						Booking is allowed for guests. Login or sign up to save trips under your profile.
+						<a routerLink="/login">Login</a>
+						/
+						<a routerLink="/signup">Sign Up</a>
+					</p>
+
+					<form [formGroup]="bookingForm" (ngSubmit)="submitBooking()" novalidate>
+						<div class="form-grid">
+							<div class="field-wrap">
+								<label for="fullName">Full Name</label>
+								<input id="fullName" type="text" formControlName="fullName" placeholder="John Doe" />
+								<small *ngIf="hasFieldError('fullName')">{{ getFieldError('fullName') }}</small>
+							</div>
+
+							<div class="field-wrap">
+								<label for="email">Email</label>
+								<input id="email" type="email" formControlName="email" placeholder="john@example.com" />
+								<small *ngIf="hasFieldError('email')">{{ getFieldError('email') }}</small>
+							</div>
+
+							<div class="field-wrap">
+								<label for="phone">Phone Number</label>
+								<input id="phone" type="tel" formControlName="phone" placeholder="9876543210" />
+								<small *ngIf="hasFieldError('phone')">{{ getFieldError('phone') }}</small>
+							</div>
+
+							<div class="field-wrap">
+								<label for="days">Number of Days</label>
+								<input id="days" type="number" formControlName="days" min="1" max="60" />
+								<small *ngIf="hasFieldError('days')">{{ getFieldError('days') }}</small>
+							</div>
+
+							<div class="field-wrap">
+								<label for="travelers">Number of Travelers</label>
+								<input id="travelers" type="number" formControlName="travelers" min="1" max="20" />
+								<small *ngIf="hasFieldError('travelers')">{{ getFieldError('travelers') }}</small>
+							</div>
+						</div>
+
+						<button type="submit" class="btn-submit" [disabled]="isSubmitDisabled">Save Booking</button>
+					</form>
+				</section>
+
+				<aside class="breakdown-card">
+					<h3>2. Booking Summary</h3>
+					<div class="breakdown-row">
+						<span>Price Per Day</span>
+						<strong>${{ destination.priceFrom }}</strong>
+					</div>
+					<div class="breakdown-row">
+						<span>Number of Days</span>
+						<strong>{{ selectedDays }}</strong>
+					</div>
+					<div class="breakdown-row">
+						<span>Number of Travelers</span>
+						<strong>{{ selectedTravelers }}</strong>
+					</div>
+					<div class="breakdown-row total-row">
+						<span>Total Cost</span>
+						<strong [class.pulse]="costPulse">${{ totalCost }}</strong>
+					</div>
+				</aside>
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,96 @@
+<section
+  class="booking-carousel"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Destination package images"
+  (mouseenter)="onHoverPause()"
+  (mouseleave)="onHoverResume()"
+  (focusin)="onHoverPause()"
+  (focusout)="onHoverResume()"
+  (touchstart)="onTouchStart()">
+  <p class="sr-live" aria-live="polite" aria-atomic="true">{{ liveAnnouncement }}</p>
+
+  <div
+    class="carousel-main"
+    (click)="openModal()"
+    (keydown.enter)="openModal()"
+    (keydown.space)="openModal(); $event.preventDefault()"
+    role="button"
+    tabindex="0"
+    aria-label="Open full-screen gallery">
+    <img
+      [src]="getImageSrc(visibleImages[activeIndex].src)"
+      [attr.srcset]="getMainSrcSet()"
+      [attr.sizes]="'(max-width: 768px) 100vw, 70vw'"
+      [alt]="visibleImages[activeIndex].alt"
+      loading="lazy"
+      (error)="onMainImageError($event)" />
+
+    <div class="overlay">
+      <p class="caption">{{ visibleImages[activeIndex].caption }}</p>
+      <div class="badges">
+        <span class="badge">Premium Package</span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="control playback"
+      *ngIf="canAutoplay"
+      (click)="isExplicitlyPaused ? resumeByUser() : pauseByUser(); $event.stopPropagation()"
+      [attr.aria-label]="isExplicitlyPaused ? 'Play carousel' : 'Pause carousel'">
+      {{ isExplicitlyPaused ? 'Play' : 'Pause' }}
+    </button>
+
+    <button type="button" class="control prev" (click)="prevSlide(); $event.stopPropagation()" aria-label="Previous slide">&#10094;</button>
+    <button type="button" class="control next" (click)="nextSlide(); $event.stopPropagation()" aria-label="Next slide">&#10095;</button>
+  </div>
+
+  <div class="dots" role="tablist" aria-label="Slide indicators">
+    <button
+      type="button"
+      *ngFor="let image of visibleImages; let i = index; trackBy: trackByIndex"
+      class="dot"
+      [class.active]="i === activeIndex"
+      role="tab"
+      [attr.aria-selected]="i === activeIndex"
+      [attr.aria-label]="'Go to slide ' + (i + 1)"
+      (click)="goToSlide(i)"></button>
+  </div>
+
+  <div class="thumb-strip" aria-label="Thumbnail navigation">
+    <button
+      type="button"
+      class="thumb"
+      *ngFor="let image of visibleImages; let i = index; trackBy: trackByIndex"
+      [class.active]="i === activeIndex"
+      (click)="goToSlide(i)"
+      [attr.aria-label]="'Show image ' + (i + 1)">
+      <img
+        [src]="getImageSrc(image.src)"
+        [attr.srcset]="getThumbSrcSet(image.src)"
+        [attr.sizes]="'96px'"
+        [alt]="image.alt"
+        loading="lazy"
+        (error)="onThumbnailError($event)" />
+    </button>
+  </div>
+
+  <button type="button" class="gallery-link" *ngIf="showGalleryLink" (click)="openModal()">View full gallery</button>
+</section>
+
+<div class="gallery-modal" *ngIf="isModalOpen" role="dialog" aria-modal="true" aria-label="Full-screen gallery">
+  <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close gallery">Close</button>
+
+  <div class="modal-content" (touchstart)="onTouchSwipeStart($event)" (touchend)="onTouchSwipeEnd($event)">
+    <button type="button" class="control prev" (click)="prevSlide()" aria-label="Previous slide">&#10094;</button>
+
+    <img
+      [src]="getImageSrc(allImages[activeIndex].src)"
+      [alt]="allImages[activeIndex].alt"
+      loading="lazy"
+      (error)="onMainImageError($event)" />
+
+    <button type="button" class="control next" (click)="nextSlide()" aria-label="Next slide">&#10095;</button>
+  </div>
+</div>

@@ -93,6 +93,27 @@ $pink: #e15b80;
   &:hover {
     color: white;
   }
+
+  &.nav-logout {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+}
+
+.user-pill {
+  color: #f9d68b;
+  border: 1px solid rgba(249, 214, 139, 0.4);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  background: rgba(249, 214, 139, 0.08);
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-cta {

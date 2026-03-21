@@ -1,0 +1,6 @@
+<section class="toast-stack" *ngIf="messages$ | async as messages">
+  <article class="toast" *ngFor="let message of messages" [ngClass]="message.type">
+    <p>{{ message.text }}</p>
+    <button type="button" (click)="dismiss(message.id)" aria-label="Dismiss notification">x</button>
+  </article>
+</section>

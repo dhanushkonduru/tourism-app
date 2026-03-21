@@ -6,12 +6,19 @@
       <li><a routerLink="/home" routerLinkActive="active">Home</a></li>
       <li><a routerLink="/destinations" routerLinkActive="active">Destinations</a></li>
       <li><a routerLink="/booking" routerLinkActive="active">Packages</a></li>
+      <li><a routerLink="/profile" routerLinkActive="active">Profile</a></li>
       <li><a routerLink="/contact" routerLinkActive="active">Contact</a></li>
     </ul>
 
     <div class="nav-actions">
-      <a class="nav-link-btn" routerLink="/login">Login</a>
-      <button class="nav-cta" routerLink="/signup">Sign Up</button>
+      <ng-container *ngIf="currentUser$ | async as currentUser; else guestActions">
+        <span class="user-pill">{{ currentUser.displayName }}</span>
+        <button class="nav-link-btn nav-logout" type="button" (click)="logout()">Logout</button>
+      </ng-container>
+      <ng-template #guestActions>
+        <a class="nav-link-btn" routerLink="/login">Login</a>
+        <button class="nav-cta" routerLink="/signup">Sign Up</button>
+      </ng-template>
     </div>
   </div>
 </nav>

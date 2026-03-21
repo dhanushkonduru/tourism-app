@@ -201,7 +201,7 @@
 
             <p class="description">{{ destination.description }}</p>
 
-            <button class="btn-glass" routerLink="/destinations">
+            <button class="btn-glass" [routerLink]="['/booking', destination.destinationId]">
               <span>View Packages</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -234,7 +234,7 @@
     </div>
 
     <div class="packages-grid">
-      @for (pkg of popularPackages; track pkg.id) {
+      @for (pkg of popularPackages; track pkg.id; let i = $index) {
         <div class="glass-package-card">
           <div class="package-image-wrapper">
             <img [src]="pkg.image" [alt]="pkg.title" loading="lazy" />
@@ -274,7 +274,7 @@
                 <span class="price-label">From</span>
                 <span class="price-amount">${{ pkg.price }}</span>
               </div>
-              <button class="btn-primary btn-sm" routerLink="/booking">
+              <button class="btn-primary btn-sm" [routerLink]="getBookingRouteByIndex(i)">
                 <span>Book Now</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -378,7 +378,7 @@
     <div class="glass-cta-container">
       <h2>Ready to Start Your Journey?</h2>
       <p>Let us help you create memories that last a lifetime</p>
-      <button class="btn-primary btn-lg" routerLink="/booking">
+      <button class="btn-primary btn-lg" [routerLink]="getPrimaryBookingRoute()">
         <span>Plan My Trip Now</span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="5" y1="12" x2="19" y2="12"></line>

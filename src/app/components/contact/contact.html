@@ -1,2 +1,73 @@
-<h2>Contact Us</h2>
-<p>Get in touch for more information.</p>
+<section class="contact-page">
+	<div class="container">
+		<header class="page-header">
+			<p class="eyebrow">TourismApp Support</p>
+			<h1>Contact Our Travel Team</h1>
+			<p>Need help with bookings, itinerary customization, or account support? Reach us anytime.</p>
+		</header>
+
+		<div class="contact-layout">
+			<section class="contact-info-card" aria-label="Contact information">
+				<h2>Contact Information</h2>
+				<p>Our concierge desk is available to support your journey planning and booking assistance.</p>
+
+				<ul class="info-list">
+					<li>
+						<span class="icon" aria-hidden="true">✉</span>
+						<div>
+							<p>Email</p>
+							<a href="mailto:support@tourismapp.com">support@tourismapp.com</a>
+						</div>
+					</li>
+					<li>
+						<span class="icon" aria-hidden="true">☎</span>
+						<div>
+							<p>Phone</p>
+							<a href="tel:+18005550100">+1 800 555 0100</a>
+						</div>
+					</li>
+					<li>
+						<span class="icon" aria-hidden="true">⌖</span>
+						<div>
+							<p>Office</p>
+							<span>Global Travel HQ</span>
+						</div>
+					</li>
+				</ul>
+			</section>
+
+			<section class="contact-form-card" aria-label="Contact form">
+				<h2>Send a Message</h2>
+
+				<form [formGroup]="contactForm" (ngSubmit)="submitMessage()" novalidate>
+					<label>
+						Full Name
+						<input type="text" formControlName="fullName" placeholder="Enter your full name" />
+						<small *ngIf="hasFieldError('fullName')">{{ fieldError('fullName') }}</small>
+					</label>
+
+					<label>
+						Email
+						<input type="email" formControlName="email" placeholder="you@example.com" />
+						<small *ngIf="hasFieldError('email')">{{ fieldError('email') }}</small>
+					</label>
+
+					<label>
+						Subject
+						<input type="text" formControlName="subject" placeholder="How can we help?" />
+						<small *ngIf="hasFieldError('subject')">{{ fieldError('subject') }}</small>
+					</label>
+
+					<label>
+						Message
+						<textarea rows="5" formControlName="message" placeholder="Share your request"></textarea>
+						<small *ngIf="hasFieldError('message')">{{ fieldError('message') }}</small>
+					</label>
+
+					<button type="submit" class="btn-submit">Send Message</button>
+					<p class="success-message" *ngIf="successMessage">{{ successMessage }}</p>
+				</form>
+			</section>
+		</div>
+	</div>
+</section>

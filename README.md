@@ -57,3 +57,49 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Auth Modes (Local and Firebase)
+
+This app supports two auth modes through a single environment flag:
+
+- `local`: development fallback using browser Local Storage.
+- `firebase`: production-ready mode using Firebase Authentication and Firestore.
+
+Set mode in environment files:
+
+- `src/environments/environment.ts`
+- `src/environments/environment.prod.ts`
+
+```ts
+export const environment = {
+	production: false,
+	authMode: 'local', // or 'firebase'
+	firebase: null // replace with Firebase config when using firebase mode
+};
+```
+
+When `authMode` is `firebase`, provide Firebase config object values (`apiKey`, `authDomain`, `projectId`, `appId`, etc.).
+
+## Firestore Data Model
+
+- `users/{uid}`: profile (`displayName`, `email`, `createdAt`)
+- `bookings/{bookingId}`: booking document including `userId`
+
+## Firestore Rules Starter
+
+```txt
+rules_version = '2';
+service cloud.firestore {
+	match /databases/{database}/documents {
+		match /bookings/{bookingId} {
+			allow read, write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+		}
+
+		match /users/{userId} {
+			allow read, write: if request.auth != null && request.auth.uid == userId;
+		}
+	}
+}
+```
+
+Note: For production, always use Firebase auth. Local mode is development-only and stores password hashes in Local Storage (never plain text), which is not suitable for production security requirements.

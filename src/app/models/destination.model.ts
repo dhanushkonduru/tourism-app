@@ -4,6 +4,7 @@ export type TravelType = 'all' | 'luxury' | 'adventure' | 'family' | 'honeymoon'
 
 export interface Destination {
   id: number;
+  destinationId: string;
   city: string;
   name: string;
   country: string;

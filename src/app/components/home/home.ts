@@ -235,4 +235,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   get currentTestimonial(): Testimonial {
     return this.testimonials[this.currentTestimonialIndex];
   }
+
+  getBookingRouteByIndex(index: number): string[] {
+    if (this.featuredDestinations.length === 0) {
+      return ['/destinations'];
+    }
+
+    const mappedDestination = this.featuredDestinations[index % this.featuredDestinations.length];
+    return ['/booking', mappedDestination.destinationId];
+  }
+
+  getPrimaryBookingRoute(): string[] {
+    return this.getBookingRouteByIndex(0);
+  }
 }

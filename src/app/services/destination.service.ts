@@ -36,6 +36,13 @@ export class DestinationService {
   readonly regions: string[] = ['all', 'europe', 'asia', 'north-america', 'south-america', 'africa', 'oceania'];
   readonly maxBudgetLimit = 5500;
 
+  getDestinationById(identifier: string): Destination | undefined {
+    const normalizedIdentifier = identifier.trim().toLowerCase();
+    return this.destinationsSubject.value.find(
+      (destination) => destination.destinationId === normalizedIdentifier || String(destination.id) === normalizedIdentifier
+    );
+  }
+
   updateFilters(partialState: Partial<DestinationFilterState>): void {
     this.filterStateSubject.next({
       ...this.filterStateSubject.value,
